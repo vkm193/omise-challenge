@@ -1,0 +1,44 @@
+.input-box {
+    margin-right: 1em;
+    textarea {
+    min-width: 40vw;
+    max-width: 40vw;
+    min-height: 80vh;
+    max-height: 80vh;
+    overflow: hidden;
+    &:hover{
+        overflow-y: auto;
+    }
+    }
+}
+
+.output-box{
+    width: 40vw;
+    border: 0.5px solid rgb(169, 169, 169);
+    height: 80vh;
+    margin-left: 1em;
+    padding: 2px;
+    overflow: hidden;
+    text-align: left;
+    background-color: lightgray;
+    &:hover{
+        overflow-y: auto;
+    }
+    pre{
+        margin: 0px;
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+    }
+}
+
+.json-page{
+    box-sizing: border-box;
+    display: flex;
+    margin-top: 2em;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
