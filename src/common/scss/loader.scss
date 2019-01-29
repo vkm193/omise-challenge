@@ -1,0 +1,26 @@
+.loader{
+  display: inline-block;
+  height: 2.5em;
+  width: 2.5em;
+}
+
+.loader:after{
+  content: ' ';
+  display: block;
+  height: 2.5em;
+  width: 2.5em;
+  border: 5px solid transparent;
+  border-color: #000 transparent #61dafb transparent;
+  
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin{
+ 0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

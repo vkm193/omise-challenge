@@ -7,6 +7,7 @@
     "enzyme-adapter-react-16": "^1.8.0",
     "node-sass": "^4.11.0",
     "react": "^16.7.0",
+    "react-bootstrap-table": "^4.3.1",
     "react-dom": "^16.7.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",

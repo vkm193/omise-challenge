@@ -11,8 +11,12 @@ export default class JsonFormatPage extends Component {
   }
 
   onTextChange(event){
-  const formattedJson = this.formattedJson(event.target.value);
-  this.setState({formattedJson});
+  if(event.target.value){
+    const formattedJson = this.formattedJson(event.target.value);
+    this.setState({formattedJson});
+  }else{
+    this.setState({formattedJson: ''});
+  }
 }
 
 formattedJson(nodeArray){
@@ -20,19 +24,30 @@ formattedJson(nodeArray){
     try{
       nodeArray = JSON.parse(nodeArray);
     }catch{
-      return 'Not a json string';
+      return 'Not a json string.';
     }
   }
   let objects = [];
-  Object.keys(nodeArray).map((key) => {
-    objects = [...objects, ...nodeArray[key]];
-  });
-  let result = this.insertChildren(objects);
+  let result;
   let stringifyResult;
   try{
+  Object.keys(nodeArray).map((key) => {
+    if(nodeArray[key] instanceof Array){
+      objects = [...objects, ...nodeArray[key]];
+    }
+  });
+  }catch(error){
+    result = `Data is not in proper format.`;
+  }
+  if(objects.length){
+    result = this.insertChildren(objects);
+  }else{
+    result = nodeArray;
+  }
+  try{
     stringifyResult = JSON.stringify(result, null, 2);
-  }catch{
-    stringifyResult = `Some error occured while stringifying JSON.`;
+  }catch(error){
+    stringifyResult = `Some error occured while stringifying JSON. Error - ${error}`;
   }
   return stringifyResult;
 }
@@ -86,16 +101,19 @@ insertChildren(objects, value, orphan){
     return (
       <div className="json-page">
         <div id="input-box" className="input-box">
-          <textarea onChange={this.onTextChange} placeholder="Add your JSON here..." />
+          <textarea onChange={this.onTextChange} placeholder={message} />
         </div>
-        <div id="output-box" className="output-box">
-          <pre>
-            {this.state.formattedJson && this.state.formattedJson.length ?  this.state.formattedJson : message}
-          </pre>
-        </div>
+        {this.state.formattedJson && this.state.formattedJson.length ? 
+        (
+          <div id="output-box" className="output-box">
+            <pre>
+              {this.state.formattedJson}
+            </pre>
+          </div>
+        ) : ''}
       </div>
     )
   }
 }
 
-const message = `Paste your json in left side box to see it's formatted output here.`;
+const message = `Paste your json in this box to see it's formatted output.`;

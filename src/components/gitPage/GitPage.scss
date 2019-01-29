@@ -1,0 +1,54 @@
+#repositories{
+    margin: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.react-bs-table-pagination{
+    display: flex;
+    justify-content: center;
+    .row > div:first-child{
+        display: none;
+    }
+    .row > div:nth-child(2){
+        width: 100%;
+    }
+}
+
+#error{
+    color: red;
+}
+
+@media screen and (min-width: 425px){
+    #user-login{
+        display: flex;
+        align-items: center;
+        img{
+            height: 3em;
+            width: 3em;
+            border-radius: 50%;
+        }
+        span{
+            font-weight: bold;
+            margin-left: 1em;
+        }
+    }
+}
+
+@media screen and (max-width: 425px){
+    #user-login{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        img{
+            height: 2em;
+            width: 2em;
+            border-radius: 50%;
+        }
+        span{
+            font-weight: bold;
+        }
+    }
+}
