@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Footer.scss';
+import './footer.scss';
 
  class Footer extends Component {
   render() {
@@ -7,7 +7,10 @@ import './Footer.scss';
         <div className="footer">
             <footer className="footer">
                 <p>
-                    App is built with <a href="https://react.org">React</a>.
+                    App is built with &nbsp;
+                    <a href="https://github.com/facebook/create-react-app">
+                        Create React App
+                    </a>.
                 </p>
             </footer>
         </div>

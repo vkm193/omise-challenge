@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './JsonFormatPage.scss';
+import './jsonFormatPage.scss';
 
 export default class JsonFormatPage extends Component {
   constructor(props, context){

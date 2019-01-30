@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import Api from '../../services/Api';
-import './GitPage.scss';
+import './gitPage.scss';
 import '../../common/scss/loader.scss';
 
 export default class GitPage extends Component {
   constructor(props, context){
     super(props, context);
     this.state = {
-      repostitories: [],
+      repositories: [],
       since: 1,
       totalSize: 0,
       page: 1,
@@ -17,26 +17,33 @@ export default class GitPage extends Component {
       items: [],
       isLoading: false,
       isError: false,
-      error: ''
+      error: '',
+      sortOrder: 'asc',
+      sortName: 'id'
     }
   }
 
+  async componentDidMount(){
+    await this.fetchData();
+  }
+
   getGitHubRepos = async (page, size) => {
-    if(page*size >= this.state.repostitories.length){ // Fetch if reached to end or data is not yet available
+    if(page*size >= this.state.repositories.length){ // Fetch if reached to end or data is not yet available
       this.state.isLoading = true;
       this.setState({isError: false, error: ''});
       const response = await Api.getGitPublicRepos(this.state.since);
       if(!response.isError){
-        this.setState({repostitories: [...this.state.repostitories, ...response.repos], 
+        this.setState({repositories: [...this.state.repositories, ...response.repos], 
           since: response.since});
+          this.onSortChange(this.state.sortName, this.state.sortOrder, false);
       }else{
         this.setState({isError: response.isError, error: response.error});
       }
       this.state.isLoading = false;
     }
     if(!this.state.isError){
-      return ({items: this.state.repostitories.slice((page-1)*size, ((page-1)*size) + size), 
-        total: this.state.repostitories.length});
+      return ({items: this.state.repositories.slice((page-1)*size, ((page-1)*size) + size), 
+        total: this.state.repositories.length});
     }else{
       return {isError: this.state.isError, error: this.state.error};
     }
@@ -49,22 +56,31 @@ export default class GitPage extends Component {
     }
   }
 
-  handleSizePerPageChange = (sizePerPage) => {
-    // When changing the size per page always navigating to the first page
-    this.fetchData(1, sizePerPage);
-  }
-
   handlePageChange = (page, sizePerPage) => {
     this.fetchData(page, sizePerPage);
   }
 
-  async componentDidMount(){
-    await this.fetchData();
+  onSortChange = (sortName, sortOrder, onEvent=true) => {
+    if (sortOrder === 'asc') {
+      this.state.repositories.sort(function(a, b) {
+        return (parseInt(a[sortName], 10) - parseInt(b[sortName], 10));
+      });
+    } else {
+      this.state.repositories.sort(function(a, b) {
+        return (parseInt(b[sortName], 10) - parseInt(a[sortName], 10));
+      });
+    }
+    if(onEvent){
+      this.setState({ sortOrder : sortOrder, sortName: sortName });
+      this.fetchData();
+    }
   }
+
+
 
   showOwnerLogin = (cell, row) => {
     return(<div id="user-login">
-      <img src={row.owner.avatar_url} alt="User Avatan"     
+      <img src={row.owner.avatar_url} alt="User Avatar"     
         onError={(e)=>{e.target.onerror = null; 
         e.target.src="../../assets/images/default-avatar.png"}} />
         <a href={row.owner.html_url} target="_blank"><span>{row.owner.login}</span></a>
@@ -75,30 +91,37 @@ export default class GitPage extends Component {
     return (<a href={row.html_url} target="_blank"> {row.full_name}</a>);
   }
 
-  getTitle = (cell, row) => {
-    return row.description;
+  getDescriptionOrTitle = (cell, row) =>{
+    return row.description ? row.description : `No description for this repo.`;
   }
 
   render() {
     const options = {
       onPageChange: this.handlePageChange,
-      onSizePerPageList: this.handleSizePerPageChange,
       page: this.state.page,
-      sizePerPage: this.state.sizePerPage
+      sizePerPage: this.state.sizePerPage,
+      onSortChange: this.onSortChange,
+      sortOrder: 'asc'
     };
 
     return (
       <div id="repositories">
-        { this.state.repostitories.length  ? 
-       <BootstrapTable hover remote
+        { this.state.repositories.length  ? 
+       <BootstrapTable 
+          remote
+          hover
           options={options}
           data={ this.state.items }
-          fetchInfo={{dataTotalSize: this.state.repostitories.length}}
+          fetchInfo={{dataTotalSize: this.state.repositories.length}}
           pagination>
-          <TableHeaderColumn width={'10%'} dataField='id' sortFunc={this.sortOnId} isKey={true}>Repository Id</TableHeaderColumn>
+          <TableHeaderColumn width={'10%'} dataSort= {true} dataField='id'
+          sortFunc={ this.onSortChange }
+          isKey={true}>Repository Id</TableHeaderColumn>
           <TableHeaderColumn dataField='data' dataFormat={this.showOwnerLogin}>Owner</TableHeaderColumn>
           <TableHeaderColumn dataField='name'>Repository Name</TableHeaderColumn>
-          <TableHeaderColumn columnTitle={this.getTitle} dataField='description'>Description</TableHeaderColumn>
+          <TableHeaderColumn columnTitle={this.getDescriptionOrTitle} 
+            dataFormat={this.getDescriptionOrTitle} 
+            dataField='description'>Description</TableHeaderColumn>
           <TableHeaderColumn dataField='url' dataFormat={this.getRepositoryUrl}>Repository Url</TableHeaderColumn>
         </BootstrapTable>
         : !this.state.isError ? <div className="loader">Loading...</div> : 
